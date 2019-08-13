@@ -1,0 +1,15 @@
+
+server:
+  port: 8080
+spring:
+  application:
+    name: mmall
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp
+  datasource:
+    url: jdbc:mysql://192.168.156.4:3306/mall?characterEncoding=utf-8
+    driver-class-name: com.mysql.jdbc.Driver
+    password: mmall
+    username: mmall
