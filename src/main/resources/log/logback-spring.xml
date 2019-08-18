@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 日志级别从低到高分为TRACE < DEBUG < INFO < WARN < ERROR < FATAL，如果设置为WARN，则低于WARN的信息都不会输出 -->
+<!--<logger name="org.apache.catalina.startup.DigesterFactory" level="ERROR"/>
+<logger name="org.apache.catalina.util.LifecycleBase" level="ERROR"/>
+<logger name="org.apache.coyote.http11.Http11NioProtocol" level="WARN"/>
+<logger name="org.apache.sshd.common.util.SecurityUtils" level="WARN"/>
+<logger name="org.apache.tomcat.util.net.NioSelectorPool" level="WARN"/>
+<logger name="org.eclipse.jetty.util.component.AbstractLifeCycle" level="ERROR"/>
+<logger name="org.hibernate.validator.internal.util.Version" level="WARN"/>-->
+
+<!-- scan:当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true -->
+<!-- scanPeriod:设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。 -->
+<!-- debug:当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。 -->
+
+
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <property name="log.path" value="E:/Data/JavaECommerce/toolsMall/log/mymmall"></property>
+    <!--debug及以上级别都打印控制台-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+       <!-- <encoding>UTF-8</encoding>-->
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
+            <charset>UTF-8</charset>
+            <!--<pattern>${CONSOLE_LOG_PATTERN}</pattern>-->
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <!--项目日志：时间滚动输出，可以存10天-->
+    <appender name="mmall" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--<File>d:/mmalllog/mmall.log</File>-->
+        <File>${log.path}/mmall.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/mmall.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <!--<append>true</append>-->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+
+    <!--level是error才记录-->
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--<File>d:/mmalllog/error.log</File>-->
+        <File>${log.path}/error.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>E:/Data/JavaECommerce/toolsMall/log/mymmall/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <!--<fileNamePattern>d:/mmalllog/error.log.%d{yyyy-MM-dd}.gz</fileNamePattern>-->
+            <!--<append>true</append>-->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--
+      <logger>用来设置某一个包或者具体的某一个类的日志打印级别、
+      以及指定<appender>。<logger>仅有一个name属性，
+      一个可选的level和一个可选的addtivity属性。
+      name:用来指定受此logger约束的某一个包或者具体的某一个类。
+      level:用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，
+            还有一个特俗值INHERITED或者同义词NULL，代表强制执行上级的级别。
+            如果未设置此属性，那么当前logger将会继承上级的级别。
+      addtivity:是否向上级logger传递打印信息。默认是true。
+  -->
+
+
+    <!--comm.mmall包的基本打印级别是Info,打印级别至少是info,
+    如果appender比info高，则按appender的高级别，
+    如果appender没有定义打印级别，则按照logger的级别,
+    打印的信息不会向上级传递：root不会把com.mmall里的日志信息用自己的appender再打印一次-->
+    <logger name="com.mmall" additivity="false" level="INFO" >
+
+        <appender-ref ref="mmall" /><!--按照root的级别-->
+        <appender-ref ref="console"/><!--INFO-->
+        <appender-ref ref="error"/><!--ERROR-->
+    </logger>
+
+
+
+    <!--<logger name="org.springframework.web" level="info"/>-->
+    <!--<logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/>-->
+    <!--
+        使用mybatis的时候，sql语句是debug下才会打印，而这里我们只配置了info，所以想要查看sql语句的话，有以下两种操作：
+        第一种把<root level="info">改成<root level="DEBUG">这样就会打印sql，不过这样日志那边会出现很多其他消息
+        第二种就是单独给dao下目录配置debug模式，代码如下，这样配置sql语句会打印，其他还是正常info级别：
+     -->
+
+    <!-- geelynote mybatis log 日志 -->
+    <!--comm.mmall.dao有debug级别及以上级别的日志信息的话，本身不会打印（没有appender），
+    additivity = ”true“（默认），会传递给上一级打印，
+    上一级是com.mmall这个logger，这时会把debug级别的日志给appender，
+    由于mmall,本身没有设置日志级别，会输出debug
+    console：是info,不会输出debug
+    error是error,不会输出debug
+    -->
+    <logger name="com.mmall.dao" level="DEBUG"/>
+
+    <!--<logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG" >-->
+    <!--<appender-ref ref="console"/>-->
+    <!--</logger>-->
+
+    <!--<logger name="java.sql.Connection" level="DEBUG">-->
+    <!--<appender-ref ref="console"/>-->
+    <!--</logger>-->
+    <!--<logger name="java.sql.Statement" level="DEBUG">-->
+    <!--<appender-ref ref="console"/>-->
+    <!--</logger>-->
+
+    <!--<logger name="java.sql.PreparedStatement" level="DEBUG">-->
+    <!--<appender-ref ref="console"/>-->
+    <!--</logger>-->
+    <!--
+         root节点是必选节点（类似logger结点），用来指定最基础的日志输出级别，只有一个level属性
+         level:用来设置打印级别，大小写无关：TRACE, DEBUG, INFO, WARN, ERROR, ALL 和 OFF，
+         不能设置为INHERITED或者同义词NULL。默认是DEBUG
+         可以包含零个或多个元素，标识这个appender将会添加到这个logger。
+     -->
+
+    <root level="DEBUG">
+        <appender-ref ref="console"/>
+        <appender-ref ref="error"/>
+    </root>
+
+</configuration>

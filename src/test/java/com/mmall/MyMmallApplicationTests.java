@@ -1,4 +1,4 @@
-package com.my_mmall;
+package com.mmall;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
