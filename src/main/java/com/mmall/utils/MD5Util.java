@@ -1,6 +1,5 @@
 package com.mmall.utils;
 
-import com.mmall.config.MmallConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
